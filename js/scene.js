@@ -74,6 +74,8 @@ export function createTree(x, z) {
   group.add(leaves);
 
   group.position.set(x, -2, z);
+  group.userData.isCollidable = true;
+  group.userData.radius = 1.5;
   return group;
 }
 

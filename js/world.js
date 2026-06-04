@@ -3,8 +3,8 @@ import { createGround, createTree, createObstacle, createRing } from './scene.js
 const CHUNK_SIZE = 80;
 const VIEW_RADIUS = 3;
 const TREE_DENSITY = 0.15;
-const OBSTACLE_DENSITY = 0.04;
-const RING_DENSITY = 0.02;
+const OBSTACLE_DENSITY = 0.5;
+const RING_DENSITY = 0.15;
 
 function hash(x, z) {
   return x * 374761393 + z * 668265263;

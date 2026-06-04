@@ -41,7 +41,7 @@ export class Game {
     const rings = world.getActiveRings();
     for (const ring of rings) {
       const dx = playerPos.x - ring.position.x;
-      const dy = 0 - ring.position.y;
+      const dy = (playerPos.y || 1.8) - ring.position.y;
       const dz = playerPos.z - ring.position.z;
       const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
@@ -57,15 +57,15 @@ export class Game {
     if (this.hitCooldown > 0 || this.gameOver) return false;
 
     for (const obj of objects) {
-      if (!obj.userData.isObstacle) continue;
+      if (!obj.userData.isCollidable) continue;
 
       const dx = playerPos.x - obj.position.x;
       const dz = playerPos.z - obj.position.z;
       const dist = Math.sqrt(dx * dx + dz * dz);
 
       if (dist < obj.userData.radius + 0.5) {
-        this.hitCooldown = 1;
-        onHit();
+        this.hitCooldown = 0.5;
+        onHit(obj);
         return true;
       }
     }

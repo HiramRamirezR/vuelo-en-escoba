@@ -3,7 +3,6 @@ import { createBroomstickTip, TIP_FORWARD_QUAT } from './broomstick.js';
 import { initControls, getControls } from './controls.js';
 import { World } from './world.js';
 import { Game } from './game.js';
-import { ParticleSystem } from './particles.js';
 
 const { scene, camera, renderer } = createScene();
 
@@ -18,7 +17,6 @@ const _zAxis = new THREE.Vector3(0, 0, 1);
 
 const world = new World(scene);
 const game = new Game();
-const particles = new ParticleSystem(scene);
 
 initControls();
 
@@ -54,10 +52,14 @@ function updateSpeed(controls, dt) {
   } else if (fwd < -10) {
     player.speed = Math.max(player.speed - SPEED.braking * dt, 0);
   } else {
-    player.speed = Math.max(player.speed - SPEED.deceleration * dt, 0);
+    if (player.speed > 0) {
+      player.speed = Math.max(player.speed - SPEED.deceleration * dt, 0);
+    } else if (player.speed < 0) {
+      player.speed = Math.min(player.speed + SPEED.deceleration * dt, 0);
+    }
   }
 
-  const displaySpeed = Math.round((player.speed / SPEED.max) * 100);
+  const displaySpeed = Math.round(Math.abs(player.speed) / SPEED.max * 100);
   if (speedFill) speedFill.style.width = `${displaySpeed}%`;
   if (speedValue) speedValue.textContent = displaySpeed;
 }
@@ -95,14 +97,35 @@ function animateBroomTip(controls) {
   broomTip.quaternion.copy(_broomWorldQuat);
 }
 
+const hitFlash = document.createElement('div');
+hitFlash.id = 'hit-flash';
+document.body.appendChild(hitFlash);
+
+function flashHit() {
+  hitFlash.style.opacity = '0.4';
+  setTimeout(() => { hitFlash.style.opacity = '0'; }, 150);
+}
+
 function checkCollisions() {
   const allObjects = [];
   for (const [, objects] of world.chunks) {
     allObjects.push(...objects);
   }
 
-  game.checkObstacleCollision({ x: player.x, z: player.z }, allObjects, () => {
-    player.speed *= 0.3;
+  game.checkObstacleCollision({ x: player.x, z: player.z }, allObjects, (obstacle) => {
+    const dx = player.x - obstacle.position.x;
+    const dz = player.z - obstacle.position.z;
+    const dist = Math.sqrt(dx * dx + dz * dz);
+
+    if (dist > 0) {
+      const nx = dx / dist;
+      const nz = dz / dist;
+      player.x += nx * 0.5;
+      player.z += nz * 0.5;
+      player.speed *= -0.4;
+    }
+
+    flashHit();
   });
 }
 
@@ -122,21 +145,7 @@ function animate(time) {
   animateBroomTip(controls);
   checkCollisions();
 
-  game.update({ x: player.x, z: player.z }, dt, world);
-
-  if (player.speed > 1) {
-    const backX = Math.sin(player.rotation);
-    const backZ = Math.cos(player.rotation);
-    const origin = new THREE.Vector3(
-      broomTip.position.x + backX * 0.3 + (Math.random() - 0.5) * 0.2,
-      broomTip.position.y + (Math.random() - 0.5) * 0.2,
-      broomTip.position.z + backZ * 0.3 + (Math.random() - 0.5) * 0.2
-    );
-    const emissionRate = Math.floor(player.speed * 2);
-    particles.emit(origin, Math.min(emissionRate, 4), { x: 0.1, y: 0.1, z: 0.1 }, player.speed, backX, backZ);
-  }
-
-  particles.update(dt);
+  game.update({ x: player.x, y: 1.8, z: player.z }, dt, world);
 
   renderer.render(scene, camera);
 }
