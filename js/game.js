@@ -33,8 +33,7 @@ export class Game {
     }
 
     this.checkRingCollisions(playerPos, world);
-
-    this.updateHUD();
+    this.updateHUD(playerPos.y);
   }
 
   checkRingCollisions(playerPos, world) {
@@ -84,10 +83,10 @@ export class Game {
     }, 100);
   }
 
-  updateHUD() {
+  updateHUD(altitude) {
     const scoreEl = document.getElementById('score-value');
     const altEl = document.getElementById('altitude-value');
     if (scoreEl) scoreEl.textContent = this.score;
-    if (altEl) altEl.textContent = Math.round(this.maxDistance);
+    if (altEl) altEl.textContent = Math.round(altitude);
   }
 }

@@ -13,7 +13,9 @@ const _broomOffset = new THREE.Vector3();
 const _broomWorldPos = new THREE.Vector3();
 const _broomWorldQuat = new THREE.Quaternion();
 const _broomSideQuat = new THREE.Quaternion();
+const _broomPitchQuat = new THREE.Quaternion();
 const _zAxis = new THREE.Vector3(0, 0, 1);
+const _xAxis = new THREE.Vector3(1, 0, 0);
 
 const world = new World(scene);
 const game = new Game();
@@ -31,7 +33,9 @@ const SPEED = {
 const player = {
   x: 0,
   z: 0,
+  y: 2,
   rotation: 0,
+  pitch: 0,
   speed: 0
 };
 
@@ -66,20 +70,29 @@ function updateSpeed(controls, dt) {
 
 function updatePosition(controls, dt) {
   const side = controls.side;
+  const targetPitch = controls.pitch || 0;
+
+  player.pitch += (targetPitch - player.pitch) * 5 * dt;
+  player.pitch = Math.max(-0.5, Math.min(0.5, player.pitch));
 
   if (Math.abs(side) > 5) {
     player.rotation -= side * 0.025 * dt;
   }
 
-  player.x -= Math.sin(player.rotation) * player.speed * dt;
-  player.z -= Math.cos(player.rotation) * player.speed * dt;
+  const horizontalSpeed = player.speed * Math.cos(player.pitch);
+  player.x -= Math.sin(player.rotation) * horizontalSpeed * dt;
+  player.z -= Math.cos(player.rotation) * horizontalSpeed * dt;
+  player.y -= Math.sin(player.pitch) * player.speed * dt;
+
+  player.y = Math.max(0.5, Math.min(50, player.y));
 }
 
 function updateCamera() {
   camera.position.x = player.x;
   camera.position.z = player.z;
-  camera.position.y = 1.8;
+  camera.position.y = player.y + 0.5;
   camera.rotation.y = player.rotation;
+  camera.rotation.x = -player.pitch;
 }
 
 function animateBroomTip(controls) {
@@ -90,6 +103,9 @@ function animateBroomTip(controls) {
 
   _broomWorldQuat.copy(camera.quaternion);
   _broomWorldQuat.multiply(TIP_FORWARD_QUAT);
+
+  _broomPitchQuat.setFromAxisAngle(_xAxis, -player.pitch);
+  _broomWorldQuat.multiply(_broomPitchQuat);
 
   _broomSideQuat.setFromAxisAngle(_zAxis, -controls.side * 0.003);
   _broomWorldQuat.multiply(_broomSideQuat);
@@ -145,7 +161,7 @@ function animate(time) {
   animateBroomTip(controls);
   checkCollisions();
 
-  game.update({ x: player.x, y: 1.8, z: player.z }, dt, world);
+  game.update({ x: player.x, y: player.y, z: player.z }, dt, world);
 
   renderer.render(scene, camera);
 }

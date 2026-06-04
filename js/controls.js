@@ -1,6 +1,6 @@
-let sensorData = { forward: 0, side: 0 };
-let keyboardState = { forward: 0, side: 0 };
-let touchState = { forward: 0, side: 0 };
+let sensorData = { forward: 0, side: 0, pitch: 0 };
+let keyboardState = { forward: 0, side: 0, pitch: 0 };
+let touchState = { forward: 0, side: 0, pitch: 0 };
 let useSensor = false;
 let useTouch = false;
 let isListening = false;
@@ -71,6 +71,7 @@ function handleOrientation(event) {
   const forwardTilt = 90 - beta;
   sensorData.forward = forwardTilt;
   sensorData.side = gamma;
+  sensorData.pitch = -forwardTilt * 0.003;
 
   const debugPanel = document.getElementById('debug-panel');
   if (debugPanel) {
@@ -95,6 +96,7 @@ function initKeyboard() {
 function updateKeyboard(keys) {
   let forward = 0;
   let side = 0;
+  let pitch = 0;
 
   if (keys['w'] || keys['arrowup']) forward = 1;
   else if (keys['s'] || keys['arrowdown']) forward = -1;
@@ -102,8 +104,12 @@ function updateKeyboard(keys) {
   if (keys['a'] || keys['arrowleft']) side = -1;
   else if (keys['d'] || keys['arrowright']) side = 1;
 
+  if (keys[' ']) pitch = 1;
+  else if (keys['shift']) pitch = -1;
+
   keyboardState.forward = forward * 45;
   keyboardState.side = side * 45;
+  keyboardState.pitch = pitch;
 }
 
 function initTouch() {
@@ -132,32 +138,35 @@ function initTouch() {
 
     touchState.side = Math.max(-45, Math.min(45, (dx / screenW) * 90 * sensitivity));
     touchState.forward = Math.max(-45, Math.min(45, (-dy / screenW) * 90 * sensitivity));
+    touchState.pitch = -touchState.forward * 0.003;
   }, { passive: true });
 
   container.addEventListener('touchend', () => {
     isTouching = false;
     touchState.forward = 0;
     touchState.side = 0;
+    touchState.pitch = 0;
   }, { passive: true });
 }
 
 export function getControls() {
-  if (!isListening) return { forward: 0, side: 0 };
+  if (!isListening) return { forward: 0, side: 0, pitch: 0 };
 
   const kFwd = keyboardState.forward;
   const kSide = keyboardState.side;
+  const kPitch = keyboardState.pitch;
 
-  if (kFwd !== 0 || kSide !== 0) {
-    return { forward: kFwd, side: kSide };
+  if (kFwd !== 0 || kSide !== 0 || kPitch !== 0) {
+    return { forward: kFwd, side: kSide, pitch: kPitch };
   }
 
   if (useSensor) return sensorData;
 
   if (touchState.forward !== 0 || touchState.side !== 0) {
-    return { forward: touchState.forward, side: touchState.side };
+    return { forward: touchState.forward, side: touchState.side, pitch: touchState.pitch };
   }
 
-  return { forward: 0, side: 0 };
+  return { forward: 0, side: 0, pitch: 0 };
 }
 
 export function isUsingSensor() {
