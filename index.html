@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Vuelo en Escoba</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="game-container"></div>
+
+  <div id="start-screen">
+    <h1>Vuelo en Escoba</h1>
+    <p>Coloca tu celular en la punta del palo y toca para volar</p>
+    <button id="start-btn">INICIAR VUELO</button>
+  </div>
+
+  <div id="hud">
+    <div id="speed-meter">
+      <span id="speed-label">VEL</span>
+      <div id="speed-bar"><div id="speed-fill"></div></div>
+      <span id="speed-value">0</span>
+    </div>
+    <div id="score-display">Puntos: <span id="score-value">0</span></div>
+    <div id="altitude-display">Alt: <span id="altitude-value">0</span>m</div>
+    <div id="instructions">
+      Inclina el celular hacia adelante para volar
+    </div>
+  </div>
+
+  <div id="debug-panel">
+    Esperando sensores...
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
