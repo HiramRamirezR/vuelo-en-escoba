@@ -11,7 +11,7 @@
 
   <div id="start-screen">
     <h1>Vuelo en Escoba</h1>
-    <p>Coloca tu celular en la punta del palo y toca para volar</p>
+    <p>↑↓ acelerar/reversa · ←→ girar · W subir · S bajar · A D orbita cámara</p>
     <button id="start-btn">INICIAR VUELO</button>
   </div>
 
@@ -24,16 +24,11 @@
     <div id="score-display">Puntos: <span id="score-value">0</span></div>
     <div id="altitude-display">Alt: <span id="altitude-value">0</span>m</div>
     <div id="instructions">
-      Inclina el celular hacia adelante para volar, inclina más para bajar, inclina atrás para subir
+      ↑↓ acelerar/reversa · ←→ girar · W subir · S bajar · A D orbita
     </div>
   </div>
 
-  <div id="debug-panel">
-    Esperando sensores...
-  </div>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
   <script type="module" src="js/main.js"></script>
 </body>
 </html>

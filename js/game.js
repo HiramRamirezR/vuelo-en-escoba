@@ -58,6 +58,11 @@ export class Game {
     for (const obj of objects) {
       if (!obj.userData.isCollidable) continue;
 
+      const minY = obj.userData.collisionMinY ?? -Infinity;
+      const maxY = obj.userData.collisionMaxY ?? Infinity;
+      const py = playerPos.y ?? 1.8;
+      if (py < minY || py > maxY) continue;
+
       const dx = playerPos.x - obj.position.x;
       const dz = playerPos.z - obj.position.z;
       const dist = Math.sqrt(dx * dx + dz * dz);

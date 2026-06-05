@@ -1,10 +1,9 @@
-import { createGround, createTree, createObstacle, createRing } from './scene.js';
+import { createGround, createTree, createRing } from './scene.js';
 
 const CHUNK_SIZE = 80;
 const VIEW_RADIUS = 3;
 const TREE_DENSITY = 0.15;
-const OBSTACLE_DENSITY = 0.5;
-const RING_DENSITY = 0.15;
+const RING_DENSITY = 0.2;
 
 function hash(x, z) {
   return x * 374761393 + z * 668265263;
@@ -73,21 +72,6 @@ export class World {
       objects.push(tree);
     }
 
-    const obsCount = Math.floor(CHUNK_SIZE * CHUNK_SIZE * OBSTACLE_DENSITY / 100);
-    const colors = [0xff6b6b, 0x4ecdc4, 0xffe66d, 0xa8e6cf, 0xff8a5c, 0x6c5ce7];
-    for (let i = 0; i < obsCount; i++) {
-      const r1 = seededRandom(seed + i * 7 + 100);
-      const r2 = seededRandom(seed + i * 7 + 101);
-      const r3 = seededRandom(seed + i * 7 + 102);
-      const x = baseX + (r1 - 0.5) * (CHUNK_SIZE - 8);
-      const z = baseZ + (r2 - 0.5) * (CHUNK_SIZE - 8);
-      const y = -1 + r3 * 3;
-      const color = colors[Math.floor(seededRandom(seed + i * 7 + 103) * colors.length)];
-      const obs = createObstacle(x, y, z, color);
-      this.scene.add(obs);
-      objects.push(obs);
-    }
-
     const ringCount = Math.floor(CHUNK_SIZE * CHUNK_SIZE * RING_DENSITY / 100);
     for (let i = 0; i < ringCount; i++) {
       const r1 = seededRandom(seed + i * 11 + 200);
@@ -95,7 +79,7 @@ export class World {
       const r3 = seededRandom(seed + i * 11 + 202);
       const x = baseX + (r1 - 0.5) * (CHUNK_SIZE - 10);
       const z = baseZ + (r2 - 0.5) * (CHUNK_SIZE - 10);
-      const y = -0.5 + r3 * 5;
+      const y = -0.5 + r3 * 12;
       const ring = createRing(x, y, z);
       this.scene.add(ring);
       objects.push(ring);
