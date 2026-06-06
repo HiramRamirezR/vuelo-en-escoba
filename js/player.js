@@ -13,7 +13,7 @@ function limb(parent, x, y, z, rx, ry, rz, h, r) {
   parent.add(m);
 }
 
-export function createPlayerModel() {
+export function createPlayerModel(bodyColor) {
   const group = new THREE.Group();
 
   const handleGeo = new THREE.CylinderGeometry(0.015, 0.025, 0.7, 6);
@@ -33,7 +33,7 @@ export function createPlayerModel() {
   group.add(bristles);
 
   const bodyGeo = new THREE.BoxGeometry(0.26, 0.30, 0.16);
-  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.5 });
+  const bodyMat = new THREE.MeshStandardMaterial({ color: bodyColor ?? 0x1a1a1a, roughness: 0.5 });
   const body = new THREE.Mesh(bodyGeo, bodyMat);
   body.position.set(0, 0.30, 0.02);
   body.castShadow = true;

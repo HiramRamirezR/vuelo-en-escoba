@@ -1,5 +1,12 @@
 {
   "name": "vuelo-en-escoba",
   "private": true,
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node server.js",
+    "server": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.16.0"
+  }
 }

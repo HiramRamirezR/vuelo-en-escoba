@@ -1,4 +1,4 @@
-const RING_SCORE = 100;
+const RING_SCORE = 50;
 
 export class Game {
   constructor() {
@@ -8,6 +8,8 @@ export class Game {
     this.gameOver = false;
     this.lastPos = { x: 0, z: 0 };
     this.hitCooldown = 0;
+    this.hp = 5;
+    this.maxHp = 5;
   }
 
   reset() {
@@ -16,9 +18,10 @@ export class Game {
     this.maxDistance = 0;
     this.gameOver = false;
     this.hitCooldown = 0;
+    this.hp = this.maxHp;
   }
 
-  update(playerPos, deltaTime, world) {
+  update(playerPos, deltaTime, world, onRingCollect) {
     if (this.gameOver) return;
 
     const dx = playerPos.x - this.lastPos.x;
@@ -32,11 +35,21 @@ export class Game {
       this.hitCooldown -= deltaTime;
     }
 
-    this.checkRingCollisions(playerPos, world);
+    this.checkRingCollisions(playerPos, world, onRingCollect);
     this.updateHUD(playerPos.y);
   }
 
-  checkRingCollisions(playerPos, world) {
+  takeDamage(amount) {
+    if (this.hitCooldown > 0 || this.gameOver) return false;
+    this.hp = Math.max(0, this.hp - amount);
+    this.hitCooldown = 0.5;
+    if (this.hp <= 0) {
+      this.gameOver = true;
+    }
+    return true;
+  }
+
+  checkRingCollisions(playerPos, world, onCollect) {
     const rings = world.getActiveRings();
     for (const ring of rings) {
       const dx = playerPos.x - ring.position.x;
@@ -48,6 +61,7 @@ export class Game {
         world.collectRing(ring);
         this.score += RING_SCORE;
         this.flashScore(RING_SCORE);
+        if (onCollect) onCollect(ring);
       }
     }
   }
@@ -88,10 +102,17 @@ export class Game {
     }, 100);
   }
 
+  addScore(points) {
+    this.score += points;
+    this.flashScore(points);
+  }
+
   updateHUD(altitude) {
     const scoreEl = document.getElementById('score-value');
     const altEl = document.getElementById('altitude-value');
+    const hpEl = document.getElementById('hp-value');
     if (scoreEl) scoreEl.textContent = this.score;
     if (altEl) altEl.textContent = Math.round(altitude);
+    if (hpEl) hpEl.textContent = '❤️'.repeat(this.hp) + '🖤'.repeat(this.maxHp - this.hp);
   }
 }

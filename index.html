@@ -12,6 +12,13 @@
   <div id="start-screen">
     <h1>Vuelo en Escoba</h1>
     <p>↑↓ acelerar/reversa · ←→ girar · W subir · S bajar · A D orbita cámara</p>
+    <div id="connect-section">
+      <input type="text" id="server-ip" value="localhost:3000" placeholder="IP:puerto del servidor">
+      <button id="connect-btn">CONECTAR</button>
+      <span id="connection-status">Desconectado</span>
+    </div>
+    <div id="multiplayer-badge">✓ Conectado - 2 jugadores</div>
+    <div id="singleplayer-note">Modo individual · Ejecutá npm start para multijugador</div>
     <button id="start-btn">INICIAR VUELO</button>
   </div>
 
@@ -22,10 +29,17 @@
       <span id="speed-value">0</span>
     </div>
     <div id="score-display">Puntos: <span id="score-value">0</span></div>
+    <div id="hp-display"><span id="hp-value">❤️❤️❤️❤️❤️</span></div>
     <div id="altitude-display">Alt: <span id="altitude-value">0</span>m</div>
     <div id="instructions">
       ↑↓ acelerar/reversa · ←→ girar · W subir · S bajar · A D orbita
     </div>
+  </div>
+
+  <div id="game-over">
+    <h1>Caíste</h1>
+    <p>Puntaje final: <span id="final-score">0</span></p>
+    <button id="restart-btn">REINTENTAR</button>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

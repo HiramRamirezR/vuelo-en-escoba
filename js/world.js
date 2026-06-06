@@ -81,6 +81,7 @@ export class World {
       const z = baseZ + (r2 - 0.5) * (CHUNK_SIZE - 10);
       const y = -0.5 + r3 * 12;
       const ring = createRing(x, y, z);
+      ring.userData.ringId = `${cx},${cz},${i}`;
       this.scene.add(ring);
       objects.push(ring);
       this.rings.push(ring);
@@ -137,5 +138,29 @@ export class World {
     this.scene.remove(ring);
     const idx = this.rings.indexOf(ring);
     if (idx !== -1) this.rings.splice(idx, 1);
+  }
+
+  collectRingById(ringId) {
+    for (const objects of this.chunks.values()) {
+      for (const obj of objects) {
+        if (obj.userData.ringId === ringId && !obj.userData.collected) {
+          this.collectRing(obj);
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  removeObject(obj) {
+    for (const objects of this.chunks.values()) {
+      const idx = objects.indexOf(obj);
+      if (idx !== -1) {
+        objects.splice(idx, 1);
+        if (obj.geometry) obj.geometry.dispose();
+        if (obj.material) obj.material.dispose();
+        return;
+      }
+    }
   }
 }
